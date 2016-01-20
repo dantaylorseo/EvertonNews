@@ -45,10 +45,22 @@ class ViewStoryViewController: UIViewController, UIWebViewDelegate {
         loading.hidden = true
     }
     
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        if !NSUserDefaults.standardUserDefaults().boolForKey("premium") {
+            self.canDisplayBannerAds = true
+        } else {
+            self.canDisplayBannerAds = false
+        }
+    }
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
-        self.canDisplayBannerAds = true
+        
+        if !NSUserDefaults.standardUserDefaults().boolForKey("premium") {
+            self.canDisplayBannerAds = true
+        }
         
         storyContent.delegate = self
         

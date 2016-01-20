@@ -31,6 +31,7 @@
 		2D632F401C40294C005C6DE1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2D632F3F1C40294C005C6DE1 /* Assets.xcassets */; };
 		2D632F4B1C4031F6005C6DE1 /* Stories.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D632F4A1C4031F6005C6DE1 /* Stories.swift */; };
 		2D632F4F1C40448C005C6DE1 /* ViewStoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D632F4E1C40448C005C6DE1 /* ViewStoryViewController.swift */; };
+		2D6CCD461C4F7C4A00B3A01E /* MenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D6CCD451C4F7C4A00B3A01E /* MenuTableViewController.swift */; };
 		2DFCD5C91C4CEF23005E9388 /* SwiftRegex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFCD5C81C4CEF23005E9388 /* SwiftRegex.swift */; };
 		2DFFEC851C43B9DE0002F283 /* style.css in Resources */ = {isa = PBXBuildFile; fileRef = 2DFFEC841C43B9DE0002F283 /* style.css */; };
 /* End PBXBuildFile section */
@@ -114,6 +115,7 @@
 		2D632F441C40294C005C6DE1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2D632F4A1C4031F6005C6DE1 /* Stories.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Stories.swift; sourceTree = "<group>"; };
 		2D632F4E1C40448C005C6DE1 /* ViewStoryViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewStoryViewController.swift; sourceTree = "<group>"; };
+		2D6CCD451C4F7C4A00B3A01E /* MenuTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuTableViewController.swift; sourceTree = "<group>"; };
 		2DFCD5C81C4CEF23005E9388 /* SwiftRegex.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftRegex.swift; sourceTree = "<group>"; };
 		2DFFEC841C43B9DE0002F283 /* style.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = style.css; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -209,6 +211,7 @@
 				2D556B6B1C41D1E7001BF3B4 /* Launch.storyboard */,
 				2D59EFE31C4D6B48009A20FF /* SettingsTableViewController.swift */,
 				2D5EFA731C4DA76A00B7D22A /* Reachability.swift */,
+				2D6CCD451C4F7C4A00B3A01E /* MenuTableViewController.swift */,
 			);
 			path = EvertonNewsApp;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				2D632F4B1C4031F6005C6DE1 /* Stories.swift in Sources */,
 				2D632F3B1C40294C005C6DE1 /* AllStoriesViewController.swift in Sources */,
 				2D59EFE41C4D6B48009A20FF /* SettingsTableViewController.swift in Sources */,
+				2D6CCD461C4F7C4A00B3A01E /* MenuTableViewController.swift in Sources */,
 				2DFCD5C91C4CEF23005E9388 /* SwiftRegex.swift in Sources */,
 				2D632F391C40294C005C6DE1 /* AppDelegate.swift in Sources */,
 				2D632F4F1C40448C005C6DE1 /* ViewStoryViewController.swift in Sources */,

@@ -40,6 +40,8 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
     var pushLink: String?
     var pushPushed = false  
     
+    var nextSegue = ""
+    
     @IBOutlet weak var settingsButton: UIBarButtonItem!
     
     func autoUpdate()
@@ -50,21 +52,21 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
         }
     }
     
-    
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
-        NSTimer.scheduledTimerWithTimeInterval( 30.0, target: self, selector: Selector("autoUpdate"), userInfo: nil, repeats: true)
+        NSTimer.scheduledTimerWithTimeInterval( 5 * 60 , target: self, selector: Selector("autoUpdate"), userInfo: nil, repeats: true)
         
-        settingsButton.title = NSString(string: "\u{2699}") as String
+        settingsButton.title = NSString(string: "\u{2630}") as String
         if let font = UIFont(name: "Helvetica", size: 18.0) {
             self.settingsButton.setTitleTextAttributes([NSFontAttributeName: font], forState: UIControlState.Normal)
         }
         title = "Everton News"
         
-        self.canDisplayBannerAds = true
+        if !NSUserDefaults.standardUserDefaults().boolForKey("premium") {
+            self.canDisplayBannerAds = true
+        }
         
         let appBuild = NSUserDefaults.standardUserDefaults().stringForKey("appBuild")
         if appBuild !=  NSBundle.mainBundle().infoDictionary?["CFBundleVersion"] as? String {
@@ -87,16 +89,22 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        //if pushPushed {
-        //    updateFeed()
-        //} else {
-            self.checkXMLUpdated()
-        //}
+        
+        self.checkXMLUpdated()
+        
+        if !NSUserDefaults.standardUserDefaults().boolForKey("premium") {
+            self.canDisplayBannerAds = true
+        } else {
+            self.canDisplayBannerAds = false
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        
+    }
+    
+    @IBAction func unwindToThisViewController(segue: UIStoryboardSegue) {
+        //Insert function to be run upon dismiss of VC2
     }
     
     func refresh(sender:AnyObject) {
@@ -165,11 +173,13 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
                     self.updateFeed()
                 } else if self.pushPushed {
                     self.loadPushedStory()
+                    self.tableView.reloadData()
                 } else {
                     self.getLocalData()
                     self.refreshControl?.endRefreshing()
                     self.refreshing = false
                 }
+                self.tableView.reloadData()
             })
         } else {
             self.getLocalData()
@@ -264,7 +274,7 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
                 let task = session.dataTaskWithRequest(request) {
                     (data, response, error) -> Void in
 
-                    dispatch_async(dispatch_get_main_queue(), {
+                    dispatch_sync(dispatch_get_main_queue(), {
                         self.xmlParser = NSXMLParser(data: data!)
                         self.xmlParser.delegate = self
                         self.xmlParser.parse()
@@ -272,8 +282,9 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
                         self.refreshControl?.endRefreshing()
                         self.refreshing = false
                         self.getLocalData()
+                        self.tableView.reloadData()
                         if self.pushPushed {
-                            self.loadPushedStory()
+                            self.tableView.reloadData()
                         }
                     })
                     
@@ -516,7 +527,14 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
         super.didReceiveMemoryWarning()
     }
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        return 120
+        if indexPath.row != 0 {
+            return 120
+        } else {
+            return UITableViewAutomaticDimension
+        }
+    }
+    override func tableView(tableView: UITableView, estimatedHeightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        return UITableViewAutomaticDimension
     }
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return stories.count
@@ -524,40 +542,68 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
         let item = stories[indexPath.row]
         
         let formatter = NSDateFormatter()
         formatter.dateFormat = "d MMM yyyy @ HH:mm"
         let newdate = formatter.stringFromDate(item.date!)
         
-        cell.textLabel!.text = item.title
-        let subTitle = "\(newdate)\r\n\(item.site)"
+        let subTitle = "\(item.site) - \(newdate)"
         
-        cell.detailTextLabel!.text = subTitle
-        
-        let image = UIImage(named: "logo-150")
-        let newImage = self.resizeImage(image!, toTheSize: CGSizeMake(70, 70))
-        let cellImageLayer:CALayer? = cell.imageView?.layer
-        cellImageLayer!.cornerRadius = 35
-        cellImageLayer!.masksToBounds = true
-        cell.imageView?.image = newImage
-        if(item.thumb != "" ) {
+        if indexPath.row == 0 {
+            let cell = tableView.dequeueReusableCellWithIdentifier("TopCell", forIndexPath: indexPath)
+            cell.accessoryType = .None
+            let title = cell.viewWithTag(11) as! UILabel
+            title.text = item.title
             
-            let cache = Shared.imageCache
+            let cellSub = cell.viewWithTag(12) as! UILabel
+            cellSub.text = subTitle
             
-            let URL = NSURL(string: item.thumb!)!
-            cache.fetch(URL: URL).onSuccess { image in
-                let newImage = self.resizeImage(image, toTheSize: CGSizeMake(70, 70))
-                let cellImageLayer:CALayer? = cell.imageView?.layer
-                cellImageLayer!.cornerRadius = 35
-                cellImageLayer!.masksToBounds = true
-                cell.imageView?.image = newImage
+            let imageCont = cell.viewWithTag(10) as! UIImageView
+            
+            if(item.image != "" ) {
+                
+                let cache = Shared.imageCache
+                
+                let URL = NSURL(string: item.image!)!
+                cache.fetch(URL: URL).onSuccess { image in
+                    //let newImage = self.resizeImage(image, toTheSize: CGSizeMake(537, 250))
+                    imageCont.image = image
+                }
+                
             }
             
+            return cell
+        } else {
+            let cell = tableView.dequeueReusableCellWithIdentifier("Cell", forIndexPath: indexPath)
+            
+            cell.textLabel!.text = item.title
+            cell.detailTextLabel!.text = subTitle
+            
+            let image = UIImage(named: "logo-150")
+            let newImage = self.resizeImage(image!, toTheSize: CGSizeMake(100, 100))
+            //let cellImageLayer:CALayer? = cell.imageView?.layer
+            //cellImageLayer!.cornerRadius = 35
+            //cellImageLayer!.masksToBounds = true
+            cell.imageView?.image = newImage
+            if(item.thumb != "" ) {
+                
+                let cache = Shared.imageCache
+                
+                let URL = NSURL(string: item.thumb!)!
+                cache.fetch(URL: URL).onSuccess { image in
+                    let newImage = self.resizeImage(image, toTheSize: CGSizeMake(100, 100))
+                    //let cellImageLayer:CALayer? = cell.imageView?.layer
+                    //cellImageLayer!.cornerRadius = 35
+                    //cellImageLayer!.masksToBounds = true
+                    cell.imageView?.image = newImage
+                }
+                
+            }
+            return cell
         }
         
-        return cell
+        
     
     }
 
@@ -592,6 +638,17 @@ class AllStoriesViewController: UITableViewController, NSXMLParserDelegate, NSUR
             let backItem = UIBarButtonItem()
             backItem.title = ""
             navigationItem.backBarButtonItem = backItem
+        } else if segue.identifier == "showMenu" {
+            
+            let navController = segue.destinationViewController as! UINavigationController
+            let controller = navController.viewControllers.first as! UITableViewController
+            controller.tableView.backgroundColor = UIColor.clearColor()
+            
+            let blurEffect = UIBlurEffect(style: .Dark)
+            let blurEffectView = UIVisualEffectView(effect: blurEffect)
+            
+            controller.tableView.backgroundView = blurEffectView
+            controller.tableView.separatorEffect = UIVibrancyEffect(forBlurEffect: blurEffect)
         }
     }
 

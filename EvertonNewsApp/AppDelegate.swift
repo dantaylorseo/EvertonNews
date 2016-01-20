@@ -26,8 +26,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                         if viewController.isKindOfClass(AllStoriesViewController) {
                             let allStoryVC = viewController as! AllStoriesViewController
                             allStoryVC.pushPushed = true
-                            allStoryVC.pushLink = post
-                            print("Post: \(post)")
                             self.window!.rootViewController = navController
                             self.window!.makeKeyAndVisible()
                             //self.window!.rootViewController!.presentViewController(navController, animated: true, completion: nil)

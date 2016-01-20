@@ -65,6 +65,10 @@ class SettingsTableViewController: UITableViewController, SKProductsRequestDeleg
     override func viewDidLoad() {
         super.viewDidLoad()
         
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
         let productID:NSSet = NSSet(object: self.productId);
         let productsRequest:SKProductsRequest = SKProductsRequest(productIdentifiers: productID as! Set<String>);
         productsRequest.delegate = self;
@@ -82,7 +86,6 @@ class SettingsTableViewController: UITableViewController, SKProductsRequestDeleg
             self.premiumLabel.text = "You are a premium member"
             self.premiumCell.accessoryType = .None
         }
-        
     }
 
     override func didReceiveMemoryWarning() {
